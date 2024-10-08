@@ -19,6 +19,14 @@ class openvpnas (
   Class['openvpnas::install']
   -> Class['openvpnas::service']
 
-  create_resources(openvpnas::config, $config)
-  create_resources(openvpnas::userprop, $userprop)
+  $failover_mode = $::openvpnas[failover_mode]
+  $failover_state = $::openvpnas[failover_state]
+  notify { "failover_mode is '${failover_mode}' and failover_state is '${failover_state}'.": }
+
+  if ($failover_mode == '') or ($failover_mode == 'ucarp' and $failover_state == 'active') {
+    create_resources(openvpnas::config, $config)
+    create_resources(openvpnas::userprop, $userprop)
+  } else {
+    notify { "Skipping openvpnas_config and openvpnas_userprop resources due to failover_mode(${failover_mode}) and failover_state(${failover_state}).": }
+  }
 }
