@@ -19,7 +19,11 @@ Puppet::Type.type(:openvpnas_config).provide(:sacli) do
 
   def self.instances
     res = []
-    sacli_output = sacli('ConfigQuery')
+    begin
+      sacli_output = sacli('ConfigQuery')
+    rescue
+      sacli_output = "{}"
+    end
     config = JSON.parse(sacli_output)
 
     config.each_pair do |key, value|

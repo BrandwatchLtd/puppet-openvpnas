@@ -30,7 +30,11 @@ Puppet::Type.type(:openvpnas_userprop).provide(:sacli) do
 
   def self.instances
     res = []
-    sacli_output = sacli('UserPropGet')
+    begin
+      sacli_output = sacli('UserPropGet')
+    rescue
+      sacli_output = "{}"
+    end
     config = JSON.parse(sacli_output)
 
     Puppet.debug(config)
